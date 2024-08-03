@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
 import 'home_page.dart'; // Import the HomePage
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final VoidCallback toggleTheme;
+
+  const SignUpPage({super.key, required this.toggleTheme});
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -54,7 +55,8 @@ class _SignUpPageState extends State<SignUpPage>
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(
+              builder: (context) => HomePage(toggleTheme: widget.toggleTheme)),
         );
       } on FirebaseAuthException catch (e) {
         String message = 'An error occurred. Please try again.';
@@ -94,15 +96,10 @@ class _SignUpPageState extends State<SignUpPage>
 
       final User? user = userCredential.user;
       if (user != null) {
-        _emailController.text = user.email ?? '';
-        _passwordController.text =
-            ''; // Google Sign-In does not provide a password
-        _confirmPasswordController.text =
-            ''; // Google Sign-In does not provide a password
-
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(
+              builder: (context) => HomePage(toggleTheme: widget.toggleTheme)),
         );
       } else {
         print('User not found');
@@ -122,8 +119,7 @@ class _SignUpPageState extends State<SignUpPage>
       ),
       body: FadeTransition(
         opacity: _animation,
-        child: Container(
-          color: Colors.blue[50], // Set your desired background color here
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
@@ -156,9 +152,6 @@ class _SignUpPageState extends State<SignUpPage>
                       const InputDecoration(labelText: 'Confirm Password'),
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
                     if (value != _passwordController.text) {
                       return 'Passwords do not match';
                     }
@@ -170,37 +163,17 @@ class _SignUpPageState extends State<SignUpPage>
                   onPressed: _signUpWithEmailAndPassword,
                   child: const Text('Sign Up'),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 ElevatedButton.icon(
-                  icon: const FaIcon(FontAwesomeIcons.google,
-                      color: Colors.white), // Google icon
                   onPressed: _signUpWithGoogle,
+                  icon: const FaIcon(FontAwesomeIcons.google),
                   label: const Text('Sign up with Google'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Google button color
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  icon: const FaIcon(FontAwesomeIcons.facebook,
-                      color: Colors.white), // Facebook icon
-                  onPressed: () {
-                    // Implement Facebook sign-up logic
-                  },
-                  label: const Text('Sign up with Facebook'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Facebook button color
-                  ),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginPage()),
-                    );
+                    Navigator.pop(context);
                   },
-                  child: const Text('I already have an account'),
+                  child: const Text('Already have an account? Log in'),
                 ),
               ],
             ),

@@ -4,7 +4,14 @@ import 'home_page.dart'; // Import the HomePage
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final VoidCallback onLoginSuccess;
+  final VoidCallback
+      toggleTheme; // Add this line to pass the theme toggle function
+
+  const LoginPage(
+      {super.key,
+      required this.onLoginSuccess,
+      required this.toggleTheme}); // Update constructor
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -98,7 +105,11 @@ class _LoginPageState extends State<LoginPage>
         // Navigate to home page on successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              toggleTheme: widget.toggleTheme,
+            ),
+          ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -161,7 +172,10 @@ class _LoginPageState extends State<LoginPage>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SignUpPage()),
+                          builder: (context) => SignUpPage(
+                                toggleTheme: widget
+                                    .toggleTheme, // Pass the theme toggle function
+                              )),
                     );
                   },
                   child: const Text('Don\'t have an account? Sign up'),
