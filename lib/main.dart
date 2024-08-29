@@ -62,6 +62,14 @@ class _MyAppState extends State<MyApp> {
         },
         toggleTheme: _toggleTheme,
       ),
+      routes: {
+        '/login': (context) => LoginPage(
+              toggleTheme: _toggleTheme,
+              onLoginSuccess: () {},
+            ), // Define the login page route
+        '/home': (context) =>
+            HomePage(toggleTheme: _toggleTheme), // Define the home page route
+      },
     );
   }
 }
