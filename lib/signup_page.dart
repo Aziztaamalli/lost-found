@@ -67,45 +67,45 @@ class _SignUpPageState extends State<SignUpPage>
         }
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(message)));
+
+        // Optional: Call _logout in case of an error if needed
+        // await _logout(context);
       } catch (e) {
         print(e);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('An error occurred. Please try again.')));
+
+        // Optional: Call _logout in case of an error if needed
+        // await _logout(context);
       }
     }
   }
 
   Future<void> _signUpWithGoogle() async {
     try {
+      // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        print('User cancelled Google sign-in');
-        return;
-      }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
+      // Create a new credential
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
       );
 
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      // Sign in with the credential
+      await FirebaseAuth.instance.signInWithCredential(credential);
 
-      final User? user = userCredential.user;
-      if (user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(toggleTheme: widget.toggleTheme)),
-        );
-      } else {
-        print('User not found');
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage(toggleTheme: widget.toggleTheme)),
+      );
     } catch (e) {
-      print('Google sign-in failed: $e');
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Google sign-in failed. Please try again.')));
     }
